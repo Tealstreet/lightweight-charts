@@ -12,6 +12,7 @@ export interface HorizontalLineRendererData {
 	lineWidth: LineWidth;
 
 	y: Coordinate;
+	x?: Coordinate;
 	visible?: boolean;
 	externalId?: string;
 }
@@ -56,10 +57,16 @@ export class HorizontalLineRenderer extends BitmapCoordinatesPaneRenderer {
 			return;
 		}
 
+		let x = 0;
+
+		if (this._data.x !== undefined) {
+			x = Math.round(this._data.x * horizontalPixelRatio);
+		}
+
 		ctx.lineCap = 'butt';
 		ctx.strokeStyle = this._data.color;
 		ctx.lineWidth = Math.floor(this._data.lineWidth * horizontalPixelRatio);
 		setLineStyle(ctx, this._data.lineStyle);
-		drawHorizontalLine(ctx, y, 0, bitmapSize.width);
+		drawHorizontalLine(ctx, y, x, bitmapSize.width);
 	}
 }

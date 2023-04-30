@@ -3,7 +3,9 @@ import {
 	AreaPlotRow,
 	BarPlotRow,
 	BaselinePlotRow,
+	BrokenAreaPlotRow,
 	CandlestickPlotRow,
+	CloudAreaPlotRow,
 	LinePlotRow,
 	SeriesPlotRow,
 } from '../model/series-data';
@@ -14,7 +16,9 @@ import {
 	AreaData,
 	BarData,
 	BaselineData,
+	BrokenCloudAreaData,
 	CandlestickData,
+	CloudAreaData,
 	LineData,
 	OhlcData,
 	SeriesDataItemTypeMap,
@@ -129,6 +133,16 @@ function candlestickData(plotRow: CandlestickPlotRow): CandlestickData {
 	return result;
 }
 
+function brokenAreaData(plotRow: BrokenAreaPlotRow): BrokenCloudAreaData {
+	const result: BrokenCloudAreaData = singleValueData(plotRow);
+	return result;
+}
+
+function cloudAreaData(plotRow: CloudAreaPlotRow): CloudAreaData {
+	const result: CloudAreaData = singleValueData(plotRow);
+	return result;
+}
+
 const seriesPlotRowToDataMap: SeriesPlotRowToDataMap = {
 	Area: areaData,
 	Line: lineData,
@@ -136,6 +150,8 @@ const seriesPlotRowToDataMap: SeriesPlotRowToDataMap = {
 	Histogram: lineData,
 	Bar: barData,
 	Candlestick: candlestickData,
+	BrokenArea: brokenAreaData,
+	CloudArea: cloudAreaData,
 };
 
 export function getSeriesDataCreator<TSeriesType extends SeriesType>(seriesType: TSeriesType): (plotRow: SeriesPlotRow<TSeriesType>) => SeriesDataItemTypeMap[TSeriesType] {

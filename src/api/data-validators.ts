@@ -56,7 +56,15 @@ function getChecker(type: SeriesType): Checker {
 		case 'Line':
 		case 'Histogram':
 			return checkLineItem.bind(null, type);
+
+		case 'CloudArea':
+		case 'BrokenArea':
+			return checkNothing.bind(null, type);
 	}
+}
+
+function checkNothing(type: unknown, barItem: unknown) {
+	//
 }
 
 function checkBarItem(

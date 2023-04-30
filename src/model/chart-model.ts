@@ -740,7 +740,7 @@ export class ChartModel implements IDestroyable {
 	public recalculateAllPanes(): void {
 		this._watermark.updateAllViews();
 		this._panes.forEach((p: Pane) => p.recalculate());
-		this.updateCrosshair();
+		// this.updateCrosshair();
 	}
 
 	public destroy(): void {
@@ -895,6 +895,30 @@ export class ChartModel implements IDestroyable {
 		const result = gradientColorAtPercent(topColor, bottomColor, percent / 100);
 		this._gradientColorsCache.colors.set(percent, result);
 		return result;
+	}
+
+	public setAndSaveCurrentPositionFire(x: Coordinate, y: Coordinate, fire: boolean, pane: Pane): void {
+		this._crosshair.saveOriginCoord(x, NaN as Coordinate);
+		let index = this._timeScale.coordinateToIndex(x);
+		let price = NaN;
+
+		const visibleBars = this._timeScale.visibleStrictRange();
+		if (visibleBars !== null) {
+			index = Math.min(Math.max(visibleBars.left(), index), visibleBars.right()) as TimePointIndex;
+		}
+
+		const priceScale = pane.defaultPriceScale();
+		const firstValue = priceScale.firstValue();
+		if (firstValue !== null) {
+			price = priceScale.coordinateToPrice(y, firstValue);
+		}
+		price = this._magnet.align(price, index, pane);
+
+		this._crosshair.setPosition(index, price, pane);
+		this.cursorUpdate();
+		if (fire) {
+			this._crosshairMoved.fire(this._crosshair.appliedIndex(), { x, y }, null);
+		}
 	}
 
 	private _paneInvalidationMask(pane: Pane | null, level: InvalidationLevel): InvalidateMask {

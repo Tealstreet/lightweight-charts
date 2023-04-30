@@ -17,7 +17,7 @@ export abstract class SeriesPaneViewBase<TSeriesType extends SeriesType, ItemTyp
 	protected _items: ItemType[] = [];
 	protected _itemsVisibleRange: SeriesItemsIndexesRange | null = null;
 	protected readonly abstract _renderer: TRenderer;
-	private readonly _extendedVisibleRange: boolean;
+	protected readonly _extendedVisibleRange: boolean;
 
 	public constructor(series: Series<TSeriesType>, model: ChartModel, extendedVisibleRange: boolean) {
 		this._series = series;

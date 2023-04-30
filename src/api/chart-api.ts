@@ -12,7 +12,9 @@ import {
 	AreaSeriesPartialOptions,
 	BarSeriesPartialOptions,
 	BaselineSeriesPartialOptions,
+	BrokenAreaSeriesPartialOptions,
 	CandlestickSeriesPartialOptions,
+	CloudAreaSeriesPartialOptions,
 	fillUpDownCandlesticksColors,
 	HistogramSeriesPartialOptions,
 	LineSeriesPartialOptions,
@@ -38,7 +40,9 @@ import {
 	areaStyleDefaults,
 	barStyleDefaults,
 	baselineStyleDefaults,
+	brokenAreaStyleDefaults,
 	candlestickStyleDefaults,
+	cloudAreaStyleDefaults,
 	histogramStyleDefaults,
 	lineStyleDefaults,
 	seriesOptionsDefaults,
@@ -179,6 +183,14 @@ export class ChartApi implements IChartApi, DataUpdatesConsumer<SeriesType> {
 		return this._addSeriesImpl('Baseline', baselineStyleDefaults, options);
 	}
 
+	public addCloudAreaSeries(options: CloudAreaSeriesPartialOptions = {}): ISeriesApi<'CloudArea'> {
+		return this._addSeriesImpl('CloudArea', cloudAreaStyleDefaults, options);
+	}
+
+	public addBrokenAreaSeries(options: BrokenAreaSeriesPartialOptions = {}): ISeriesApi<'BrokenArea'> {
+		return this._addSeriesImpl('BrokenArea', brokenAreaStyleDefaults, options);
+	}
+
 	public addBarSeries(options?: BarSeriesPartialOptions): ISeriesApi<'Bar'> {
 		return this._addSeriesImpl('Bar', barStyleDefaults, options);
 	}
@@ -234,7 +246,16 @@ export class ChartApi implements IChartApi, DataUpdatesConsumer<SeriesType> {
 		this._crosshairMovedDelegate.unsubscribe(handler);
 	}
 
+	public clearCrosshairPosition(): void {
+		this._chartWidget.model().clearCurrentPosition();
+	}
+
 	public priceScale(priceScaleId: string): IPriceScaleApi {
+		if (priceScaleId === undefined) {
+			warn('Using ChartApi.priceScale() method without arguments has been deprecated, pass valid price scale id instead');
+			priceScaleId = this._chartWidget.model().defaultVisiblePriceScaleId();
+		}
+
 		return new PriceScaleApi(this._chartWidget, priceScaleId);
 	}
 
@@ -256,6 +277,14 @@ export class ChartApi implements IChartApi, DataUpdatesConsumer<SeriesType> {
 
 	public autoSizeActive(): boolean {
 		return this._chartWidget.autoSizeActive();
+	}
+
+	public fullUpdate(): void {
+		return this._chartWidget.model().fullUpdate();
+	}
+
+	public setCrosshair(x: number, y: number, visible: boolean): void {
+		this._chartWidget.paneWidgets()[0].setCrosshair(x, y, visible);
 	}
 
 	private _addSeriesImpl<TSeries extends SeriesType>(
